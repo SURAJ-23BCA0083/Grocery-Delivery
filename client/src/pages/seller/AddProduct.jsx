@@ -1,6 +1,6 @@
 import { assets, categories } from "../../assets/assets";
 import { useContext, useState } from "react";
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "../../context/appContext";
 import toast from "react-hot-toast";
 import { Calendar } from "lucide-react";
 const AddProduct = () => {

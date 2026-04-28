@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AppContext, useAppContext } from "../../context/AppContext";
+import { AppContext, useAppContext } from "../../context/appContext";
 import { assets, dummyOrders } from "../../assets/assets";
 import toast from "react-hot-toast";
 
