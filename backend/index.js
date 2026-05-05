@@ -15,7 +15,12 @@ import { connectCloudinary } from "./config/cloudinary.js";
 
 const app = express();
 
-await connectCloudinary();
+// Initialize services
+const initializeServices = async () => {
+  await connectCloudinary();
+};
+
+initializeServices().catch(console.error);
 
 // allow multiple origins
 const allowedOrigins = [
