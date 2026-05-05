@@ -67,6 +67,7 @@ const Cart = () => {
       if (!selectedAddress) {
         return toast.error("Please select an address");
       }
+      
       // place order with cod
       if (paymentOption === "COD") {
         const { data } = await axios.post("/api/order/cod", {
@@ -80,6 +81,59 @@ const Cart = () => {
           toast.success(data.message);
           setCartItems({});
           navigate("/my-orders");
+        } else {
+          toast.error(data.message);
+        }
+      } 
+      // place order with razorpay
+      else if (paymentOption === "Online") {
+        const { data } = await axios.post("/api/order/razorpay", {
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddress._id,
+        });
+
+        if (data.success) {
+          const options = {
+            key: "rzp_test_SgZqpy2UIh6Qhu", // Your Razorpay key ID
+            amount: data.razorpayOrder.amount,
+            currency: data.razorpayOrder.currency,
+            name: "Grocery Delivery",
+            description: "Order Payment",
+            order_id: data.razorpayOrder.id,
+            handler: async function (response) {
+              try {
+                const verifyResponse = await axios.post("/api/order/verify", {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                });
+
+                if (verifyResponse.data.success) {
+                  toast.success("Payment successful! Order placed.");
+                  setCartItems({});
+                  navigate("/my-orders");
+                } else {
+                  toast.error("Payment verification failed");
+                }
+              } catch (error) {
+                toast.error("Payment verification error");
+              }
+            },
+            modal: {
+              ondismiss: function() {
+                toast.error("Payment cancelled");
+              }
+            },
+            theme: {
+              color: "#3399cc"
+            }
+          };
+
+          const rzp = new window.Razorpay(options);
+          rzp.open();
         } else {
           toast.error(data.message);
         }
@@ -247,7 +301,7 @@ const Cart = () => {
             className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
           >
             <option value="COD">Cash On Delivery</option>
-            <option value="Online">Online Payment</option>
+            <option value="Online">Razorpay Payment</option>
           </select>
         </div>
 
