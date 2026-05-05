@@ -19,4 +19,7 @@ router.post("/stock", authSeller, changeStock);
 router.get("/scan-expiry", scanExpiryDates);
 router.post("/check-expiry", checkProductExpiry);
 
+
+
+
 export default router;
